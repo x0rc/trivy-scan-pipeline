@@ -1,0 +1,162 @@
+name: Trvivy Vulnerability Scanner for Docker Images
+description: This Github Actions performs static vulnerability scanning of docker images and brings back the results to the Slack/Pull-Request
+author: devops@ebot7
+
+inputs:
+  IMAGE:
+    required: true
+    description: 'name of image built'   
+  NOTIFICATION_TYPES:
+    required: false
+    description: 'comma separated list notification types (slack, pull-request)'
+  SLACK_WEBHOOK:
+    required: false
+    description: 'slack webhook url for notifications (required only if NOTIFICATION_TYPES contains slack)'
+  GITHUB_ACCESS_TOKEN:
+    required: false
+    description: 'github Access token to update the PR (required only if "NOTIFICATION_TYPES" contains pull-request)'
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Prerequisite Variables
+        if: contains('${{ inputs.NOTIFICATION_TYPES }}', 'pull-request')
+        run: ./prerequisite.sh
+
+      - name: Check Prerequisite Variables
+        if: contains('${{ inputs.NOTIFICATION_TYPES }}', 'pull-request')
+        run: |
+          echo ${{ env.CRITICAL_VULNERABILITIES_FOUND }}
+
+ 
+ 
+ 
+ 
+ 
+      # ##################
+      # #### Pull Requests
+      # ##################
+      # - name: Setting Up Pull-Request Body
+      #   if: contains('${{ inputs.NOTIFICATION_TYPES }}', 'pull-request') # "${{ inputs.NOTIFICATION_TYPES == 'pull-request' }}"
+      #   run: ./pull-request.sh
+      #   env:
+      #     DOCKER_IMAGE_TO_SCAN: ${{ inputs.IMAGE }}
+
+      # - name: Updare the Pull-Request Body
+      #   if: contains('${{ inputs.NOTIFICATION_TYPES }}', 'pull-request')
+      #   uses: tzkhan/pr-update-action@v2
+      #   with:
+      #     repo-token: "${{ inputs.GITHUB_ACCESS_TOKEN }}"
+      #     base-branch-regex: '[a-z\d-_.\\/]+'
+      #     body-template: |           
+      #       ${{ env.SUMMARY_OF_THE_SCAN }}
+      #     body-update-action: 'suffix'
+      #     body-uppercase-base-match: false
+
+
+      # ##################
+      # #### Slack
+      # ##################
+      # - name: Setting Up Slack Notification
+      #   if: contains('${{ inputs.NOTIFICATION_TYPES }}', 'slack')
+      #   run: ./slack.sh
+      #   env:
+      #     DOCKER_IMAGE_TO_SCAN: ${{ inputs.IMAGE }}
+          
+
+
+      # - name: Developers - View Complete Report
+        
+      #   run: |
+      #     trivy image --severity HIGH,CRITICAL ${{ env.DOCKER_IMAGE_TO_SCAN }}
+  
+
+      # - name: Send Slack Notification
+      #   id: slack
+      #   uses: slackapi/slack-github-action@v1.19.0
+      #   if: contains('${{ inputs.NOTIFICATION_TYPES }}', 'slack')
+      #   with:
+      #     payload: |
+      #       {
+      #         "attachments": [
+      #           {
+      #             "color": "${{ env.SLACK_ATTACHMENT_BAR_COLOR }}",
+      #             "blocks": [
+      #               {
+      #                 "type": "header",
+      #                 "text": {
+      #                   "type": "plain_text",
+      #                   "text": "${{ env.TEST_RESULT_EMOJI }} ${{ env.SUMMARY_REPORT_MSG }}",
+      #                   "emoji": true
+      #                 }
+      #               },
+      #               {
+      #                 "type": "header",
+      #                 "text": {
+      #                   "type": "plain_text",
+      #                   "text": "Scan Summary",
+      #                   "emoji": true
+      #                 }
+      #               },
+      #               {
+      #                 "type": "divider"
+      #               },
+      #               {
+      #                 "type": "section",
+      #                 "fields": [
+      #                   {
+      #                     "type": "mrkdwn",
+      #                     "text": "```Severity```"
+      #                   },
+      #                   {
+      #                     "type": "mrkdwn",
+      #                     "text": "```Vulnerability Count```"
+      #                   },
+      #                   {
+      #                     "type": "mrkdwn",
+      #                     "text": "${{ env.CRITICAL_EMOJI }} Critical"
+      #                   },
+      #                   {
+      #                     "type": "mrkdwn",
+      #                     "text": "${{ env.CRITICAL_NUMBER_OF_VULNERABILITIES }}"
+      #                   },
+      #                   {
+      #                     "type": "mrkdwn",
+      #                     "text": "${{ env.HIGH_EMOJI }} High"
+      #                   },
+      #                   {
+      #                     "type": "mrkdwn",
+      #                     "text": "${{ env.HIGH_NUMBER_OF_VULNERABILITIES }}"
+      #                   }
+      #                 ]
+      #               },
+      #               {
+      #                 "type": "section",
+      #                 "text": {
+      #                   "type": "mrkdwn",
+      #                   "text": ":memo: See the Full Scanning Report"
+      #                 },
+      #                 "accessory": {
+      #                   "type": "button",
+      #                   "text": {
+      #                     "type": "plain_text",
+      #                     "text": "View Report",
+      #                     "emoji": true
+      #                   },
+      #                   "value": "report",
+      #                   "url": "${{ env.GITHUB_ACTION_URL }}",
+      #                   "action_id": "button-action"
+      #                 }
+      #               }
+      #             ]
+      #           }
+      #         ]
+      #       }                              
+      #   env:
+      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+      #     SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
