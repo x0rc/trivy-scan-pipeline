@@ -9,15 +9,12 @@ inputs:
   NOTIFICATION_TYPES:
     required: false
     description: 'comma separated list notification types (slack, pull_request)'
-  SLACK_WEBHOOK:
+  SLACK_WEBHOOK_URL:
     required: false
     description: 'slack webhook url for notifications (required only if NOTIFICATION_TYPES contains slack)'
   GITHUB_ACCESS_TOKEN:
     required: false
-    description: 'github Access token to update the PR (required only if "NOTIFICATION_TYPES" contains pull-request)'
-  SLACK_WEBHOOK_URL:
-    required: false
-    description: 'slack webhook url'  
+    description: 'github Access token to update the PR (required only if "NOTIFICATION_TYPES" contains pull-request)' 
 
 runs:
   using: "composite"
