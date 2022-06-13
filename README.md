@@ -1,1 +1,1 @@
-# trivy-scan-pipeline
+# ecr-scan-poc-base
