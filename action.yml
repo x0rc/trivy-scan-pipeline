@@ -14,7 +14,7 @@ inputs:
     description: 'slack webhook url for notifications (required only if NOTIFICATION_TYPES contains slack)'
   GITHUB_ACCESS_TOKEN:
     required: false
-    description: 'github Access token to update the PR (required only if "NOTIFICATION_TYPES" contains pull-request)' 
+    description: 'github Access token to update the PR (required only if "NOTIFICATION_TYPES" contains pull-request)'
 
 runs:
   using: "composite"
@@ -24,18 +24,19 @@ runs:
       uses: actions/checkout@v3
 
     - name: Prerequisite Variables
-      run: ${{ github.action_path }}/scripts/prerequisite.sh
+      run: ${{ env.github_action_path }}/scripts/prerequisite.sh
       shell: bash
       env:
         DOCKER_IMAGE_TO_SCAN: ${{ inputs.IMAGE }}
         GITHUB_SERVER_URL: ${{ github.server_url }}
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_RUN_ID: ${{ github.run_id }}  
-        IMAGE: ${{ inputs.IMAGE }}             
+        IMAGE: ${{ inputs.IMAGE }}     
+        github_action_path: ${{ github.action_path }}   
 
     - name: Setting Up Pull-Request Body
       if: contains(inputs.NOTIFICATION_TYPES, 'pull_request')
-      run: ${{ github.action_path }}/scripts/pull-request.sh
+      run: ${{  env.github_action_path }}/scripts/pull-request.sh
       shell: bash
       env:
         GITHUB_ACTION_URL: ${{ env.GITHUB_ACTION_URL }}
@@ -45,6 +46,7 @@ runs:
         high_emoji: ${{ env.HIGH_EMOJI }}
         high2: ${{ env.HIGH_NUMBER_OF_VULNERABILITIES }}
         IMAGE: ${{ inputs.IMAGE }}
+        github_action_path: ${{ github.action_path }}
 
     - name: Update the Pull-Request Body
       if: contains(inputs.NOTIFICATION_TYPES, 'pull_request')
