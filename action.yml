@@ -3,6 +3,10 @@ description: This Github Actions performs static vulnerability scanning of docke
 author: devops@ebot7
 
 inputs:
+  TRIVY_VERSION:
+    required: false
+    description: 'the version of the trivy to be used'  
+    default: 0.18.3
   IMAGE:
     required: true
     description: 'name of image built'   
@@ -33,6 +37,7 @@ runs:
         GITHUB_RUN_ID: ${{ github.run_id }}  
         IMAGE: ${{ inputs.IMAGE }}     
         github_action_path: ${{ github.action_path }}   
+        TRIVY_VERSION: ${{ inputs.TRIVY_VERSION }}
 
     - name: Setting Up Pull-Request Body
       if: contains(inputs.NOTIFICATION_TYPES, 'pull_request')
@@ -42,9 +47,9 @@ runs:
         GITHUB_ACTION_URL: ${{ env.GITHUB_ACTION_URL }}
         test_result_emoji: ${{ env.TEST_RESULT_EMOJI }}
         critical_emoji: ${{ env.CRITICAL_EMOJI }}
-        critical2: ${{ env.CRITICAL_NUMBER_OF_VULNERABILITIES }}
+        critical_vulnerability_count: ${{ env.CRITICAL_NUMBER_OF_VULNERABILITIES }}
         high_emoji: ${{ env.HIGH_EMOJI }}
-        high2: ${{ env.HIGH_NUMBER_OF_VULNERABILITIES }}
+        high_vulnerability_count: ${{ env.HIGH_NUMBER_OF_VULNERABILITIES }}
         IMAGE: ${{ inputs.IMAGE }}
         github_action_path: ${{ github.action_path }}
 
