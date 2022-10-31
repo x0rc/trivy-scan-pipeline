@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-wget --no-verbose https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.deb
-sudo dpkg -i trivy_${TRIVY_VERSION}_Linux-64bit.deb 2> /dev/null
+wget --no-verbose https://github.com/aquasecurity/trivy/releases/download/v0.33.0/trivy_0.33.0_Linux-64bit.deb
+sudo dpkg -i trivy_0.33.0_Linux-64bit.deb 2> /dev/null
 
 
 if [ "$FULL_REPORT" = "TRUE" ]; then
